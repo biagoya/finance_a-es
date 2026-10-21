@@ -3,53 +3,582 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Comparador de Ações</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Painel de Ações</title>
+  <meta name="description" content="Painel comparativo de 5 ações com dados do Yahoo Finance.">
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --text: #1c2430;
+      --muted: #6b7684;
+      --border: #e2e6eb;
+      --track: #e9edf2;
+      --up: #12805c;
+      --down: #c2362f;
+      --accent: #2f5bd3;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #10141a;
+        --surface: #19202a;
+        --text: #e6eaf0;
+        --muted: #93a0b0;
+        --border: #2a323d;
+        --track: #2a323d;
+        --up: #3ccf91;
+        --down: #ff6b61;
+        --accent: #7c9cff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+    header { padding-top: 24px; }
+    h1 { margin: 0 0 4px; font-size: 1.6rem; }
+    h2 { margin: 0; font-size: 1.05rem; }
+    h3 { margin: 0 0 4px; font-size: 1.15rem; }
+    a { color: var(--accent); }
+    .muted { color: var(--muted); }
+    .small { font-size: 0.85rem; }
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    .num { font-variant-numeric: tabular-nums; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 20px 0 16px;
+    }
+    .card, .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .card { padding: 14px; border-top: 4px solid var(--c); min-width: 0; }
+    .card .sym { font-weight: 600; }
+    .card .name { color: var(--muted); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card .price { font-size: 1.4rem; font-weight: 600; margin-top: 8px; }
+    .card .row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 2px; }
+    .card svg { display: block; width: 100%; height: 36px; margin-top: 8px; }
+
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+    .panel { padding: 16px; margin-bottom: 16px; min-width: 0; }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .chart-wrap { position: relative; height: 340px; margin-top: 12px; }
+    .chart-wrap.short { height: 280px; }
+
+    .seg { display: flex; gap: 4px; flex-wrap: wrap; }
+    .seg button, select {
+      font: inherit;
+      font-size: 0.85rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .seg button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .highlights { list-style: none; margin: 12px 0 0; padding: 0; }
+    .highlights li { display: flex; justify-content: space-between; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .highlights li:last-child { border-bottom: 0; }
+    .highlights .t { color: var(--muted); font-size: 0.85rem; }
+    .highlights .v { font-weight: 600; text-align: right; white-space: nowrap; }
+
+    .table-wrap { overflow-x: auto; margin-top: 12px; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 8px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); font-weight: 500; font-size: 0.8rem; cursor: pointer; user-select: none; }
+    th:hover { color: var(--text); }
+    th.asc::after { content: " ▲"; }
+    th.desc::after { content: " ▼"; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; background: var(--c); }
+
+    .range { position: relative; width: 56px; height: 6px; border-radius: 3px; background: var(--track); display: inline-block; vertical-align: middle; }
+    .range i { position: absolute; top: -3px; width: 4px; height: 12px; border-radius: 2px; background: var(--c); transform: translateX(-50%); }
+
+    .profile { margin-top: 16px; }
+    .profile .meta { margin-bottom: 12px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 12px 0; }
+    .stat { background: var(--bg); border-radius: 8px; padding: 10px; }
+    .stat .k { color: var(--muted); font-size: 0.78rem; }
+    .stat .v { font-weight: 600; margin-top: 2px; }
+    .profile p.summary { max-width: 80ch; }
+
+    .notice { background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-top: 12px; font-size: 0.85rem; color: var(--muted); }
+    footer { padding-bottom: 24px; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Comparador de Ações</h1>
+  <header class="wrap">
+    <h1>Painel de Ações</h1>
     <p id="updated" class="muted">Carregando dados…</p>
   </header>
 
-  <main>
+  <main class="wrap">
     <section id="cards" class="cards"></section>
+
+    <div class="grid-2">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Desempenho relativo (base 100)</h2>
+          <div id="periods" class="seg" role="group" aria-label="Período">
+            <button data-days="21">1M</button>
+            <button data-days="63">3M</button>
+            <button data-days="126">6M</button>
+            <button data-days="0" class="active">1A</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="perfChart"></canvas></div>
+      </section>
+      <section class="panel">
+        <h2>Destaques</h2>
+        <ul id="highlights" class="highlights"></ul>
+      </section>
+    </div>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Desempenho relativo (base 100)</h2>
-        <div id="periods" class="periods" role="group" aria-label="Período">
-          <button data-days="21">1M</button>
-          <button data-days="63">3M</button>
-          <button data-days="126">6M</button>
-          <button data-days="0" class="active">1A</button>
-        </div>
+        <h2>Desempenho e risco</h2>
+        <span class="muted small">Clique no título de uma coluna para ordenar</span>
       </div>
-      <div class="chart-wrap"><canvas id="chart"></canvas></div>
+      <div class="table-wrap"><table id="perfTable"></table></div>
     </section>
 
     <section class="panel">
-      <h2>Comparativo</h2>
-      <div class="table-wrap">
-        <table id="table">
-          <thead>
-            <tr>
-              <th>Ação</th><th>Preço</th><th>Dia</th><th>1M</th><th>6M</th><th>1A</th>
-              <th>Mín. 52s</th><th>Máx. 52s</th><th>Volume</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+      <h2>Fundamentos</h2>
+      <div id="fundNotice"></div>
+      <div class="table-wrap"><table id="fundTable"></table></div>
     </section>
 
-    <p class="muted small">
-      Dados do Yahoo Finance (endpoint não oficial), atualizados por GitHub Actions.
-      Podem ter atraso. Isto não é recomendação de investimento.
-    </p>
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Comparar indicador</h2>
+        <select id="metric" aria-label="Indicador"></select>
+      </div>
+      <div class="chart-wrap short"><canvas id="barChart"></canvas></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Perfil da empresa</h2>
+        <div id="companyTabs" class="seg" role="group" aria-label="Empresa"></div>
+      </div>
+      <div id="profile" class="profile"></div>
+    </section>
   </main>
 
+  <footer class="wrap">
+    <p class="muted small">
+      Dados do Yahoo Finance (endpoints não oficiais), atualizados por GitHub Actions; podem ter atraso ou lacunas.
+      Volatilidade e queda máxima são calculadas sobre os fechamentos diários do período.
+      Isto não é recomendação de investimento.
+    </p>
+  </footer>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script src="app.js"></script>
+  <script>
+    const COLORS = ["#2f5bd3", "#e07b00", "#12805c", "#b0379a", "#c2362f", "#0f8fa8", "#7a5c00"];
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) =>
+      String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+    const fmt = {
+      num: (v, d = 2) =>
+        v == null ? "—" : v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d }),
+      signed: (v) => (v == null ? "—" : `${v >= 0 ? "+" : ""}${fmt.num(v * 100)}%`),
+      pct: (v) => (v == null ? "—" : `${fmt.num(v * 100)}%`),
+      mult: (v) => (v == null ? "—" : `${fmt.num(v)}x`),
+      money: (v, c) => (v == null ? "—" : v.toLocaleString("pt-BR", { style: "currency", currency: c || "BRL" })),
+      compact: (v, c) =>
+        v == null
+          ? "—"
+          : v.toLocaleString("pt-BR", {
+              notation: "compact",
+              maximumFractionDigits: 1,
+              ...(c ? { style: "currency", currency: c } : {}),
+            }),
+      int: (v) => (v == null ? "—" : v.toLocaleString("pt-BR")),
+    };
+    const tone = (v) => (v == null ? "" : v >= 0 ? "up" : "down");
+
+    const RECOMMENDATION = {
+      strong_buy: "Compra forte",
+      buy: "Compra",
+      hold: "Neutro",
+      underperform: "Abaixo da média",
+      sell: "Venda",
+    };
+
+    let quotes = [];
+    let perfChart;
+    let barChart;
+
+    // ---------- Métricas derivadas do histórico ----------
+
+    // Retorno entre o último fechamento e o de `days` pregões atrás (0 = histórico inteiro).
+    function returnOver(history, days) {
+      if (history.length < 2) return null;
+      const start = days && history.length > days ? history[history.length - 1 - days] : history[0];
+      return history.at(-1).close / start.close - 1;
+    }
+
+    // Desvio padrão dos retornos logarítmicos diários, anualizado (252 pregões).
+    function volatility(closes) {
+      const r = closes.slice(1).map((c, i) => Math.log(c / closes[i]));
+      if (r.length < 2) return null;
+      const mean = r.reduce((a, b) => a + b, 0) / r.length;
+      const variance = r.reduce((a, b) => a + (b - mean) ** 2, 0) / (r.length - 1);
+      return Math.sqrt(variance * 252);
+    }
+
+    // Maior queda de um topo até um fundo posterior.
+    function maxDrawdown(closes) {
+      let peak = -Infinity;
+      let mdd = 0;
+      for (const c of closes) {
+        peak = Math.max(peak, c);
+        mdd = Math.min(mdd, c / peak - 1);
+      }
+      return closes.length ? mdd : null;
+    }
+
+    function enrich(q, i) {
+      const closes = q.history.map((p) => p.close);
+      const f = q.fundamentals ?? {};
+      const span = q.fiftyTwoWeekHigh - q.fiftyTwoWeekLow;
+      return {
+        ...q,
+        f,
+        color: COLORS[i % COLORS.length],
+        day: q.previousClose ? q.price / q.previousClose - 1 : null,
+        r1m: returnOver(q.history, 21),
+        r3m: returnOver(q.history, 63),
+        r6m: returnOver(q.history, 126),
+        r1y: returnOver(q.history, 0),
+        vol: volatility(closes),
+        mdd: maxDrawdown(closes),
+        pos52: span > 0 ? Math.min(1, Math.max(0, (q.price - q.fiftyTwoWeekLow) / span)) : null,
+        upside: f.targetMeanPrice ? f.targetMeanPrice / q.price - 1 : null,
+      };
+    }
+
+    // ---------- Cards ----------
+
+    function sparkline(q) {
+      const pts = q.history.slice(-63).map((p) => p.close);
+      if (pts.length < 2) return "";
+      const min = Math.min(...pts);
+      const max = Math.max(...pts);
+      const coords = pts
+        .map((v, i) => `${((i / (pts.length - 1)) * 100).toFixed(2)},${(34 - ((v - min) / (max - min || 1)) * 32).toFixed(2)}`)
+        .join(" ");
+      return `<svg viewBox="0 0 100 36" preserveAspectRatio="none" aria-hidden="true">
+        <polyline points="${coords}" fill="none" stroke="${q.color}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+      </svg>`;
+    }
+
+    function renderCards() {
+      $("#cards").innerHTML = quotes
+        .map(
+          (q) => `<div class="card" style="--c:${q.color}">
+            <div class="sym">${esc(q.label)}</div>
+            <div class="name">${esc(q.symbol)} · ${esc(q.name)}</div>
+            <div class="price num">${fmt.money(q.price, q.currency)}</div>
+            <div class="row"><span class="muted">Hoje</span><span class="num ${tone(q.day)}">${fmt.signed(q.day)}</span></div>
+            <div class="row"><span class="muted">12 meses</span><span class="num ${tone(q.r1y)}">${fmt.signed(q.r1y)}</span></div>
+            <div class="row"><span class="muted">Div. yield</span><span class="num">${fmt.pct(q.f.dividendYield)}</span></div>
+            ${sparkline(q)}
+          </div>`,
+        )
+        .join("");
+    }
+
+    // ---------- Destaques ----------
+
+    const HIGHLIGHTS = [
+      { title: "Maior alta em 12 meses", get: (q) => q.r1y, best: "max", show: fmt.signed },
+      { title: "Maior dividend yield", get: (q) => q.f.dividendYield, best: "max", show: fmt.pct },
+      { title: "Menor P/L", get: (q) => (q.f.trailingPE > 0 ? q.f.trailingPE : null), best: "min", show: fmt.mult },
+      { title: "Maior ROE", get: (q) => q.f.roe, best: "max", show: fmt.pct },
+      { title: "Menor volatilidade", get: (q) => q.vol, best: "min", show: fmt.pct },
+      { title: "Maior potencial (preço-alvo)", get: (q) => q.upside, best: "max", show: fmt.signed },
+    ];
+
+    function renderHighlights() {
+      const items = HIGHLIGHTS.map((h) => {
+        const ranked = quotes.filter((q) => h.get(q) != null).sort((a, b) => h.get(a) - h.get(b));
+        const q = h.best === "max" ? ranked.at(-1) : ranked[0];
+        if (!q) return "";
+        return `<li><div><div class="t">${h.title}</div><span class="dot" style="--c:${q.color}"></span>${esc(q.label)}</div>
+          <div class="v num">${h.show(h.get(q))}</div></li>`;
+      }).join("");
+      $("#highlights").innerHTML = items || `<li class="muted">Sem dados suficientes.</li>`;
+    }
+
+    // ---------- Tabelas ordenáveis ----------
+
+    const nameCol = {
+      label: "Ação",
+      get: (q) => q.label,
+      html: (q) => `<span class="dot" style="--c:${q.color}"></span>${esc(q.label)} <span class="muted">${esc(q.symbol)}</span>`,
+    };
+
+    const PERF_COLS = [
+      nameCol,
+      { label: "Preço", get: (q) => q.price, html: (q) => fmt.money(q.price, q.currency) },
+      { label: "Dia", get: (q) => q.day, show: fmt.signed, tone: true },
+      { label: "1M", get: (q) => q.r1m, show: fmt.signed, tone: true },
+      { label: "3M", get: (q) => q.r3m, show: fmt.signed, tone: true },
+      { label: "6M", get: (q) => q.r6m, show: fmt.signed, tone: true },
+      { label: "12M", get: (q) => q.r1y, show: fmt.signed, tone: true },
+      { label: "Volatilidade a.a.", get: (q) => q.vol, show: fmt.pct },
+      { label: "Queda máx.", get: (q) => q.mdd, show: fmt.signed, tone: true },
+      {
+        label: "Faixa 52 semanas",
+        get: (q) => q.pos52,
+        html: (q) =>
+          q.pos52 == null
+            ? "—"
+            : `<span class="muted small">${fmt.num(q.fiftyTwoWeekLow)}</span>
+               <span class="range" style="--c:${q.color}" title="${fmt.num(q.pos52 * 100, 0)}% da faixa"><i style="left:${q.pos52 * 100}%"></i></span>
+               <span class="muted small">${fmt.num(q.fiftyTwoWeekHigh)}</span>`,
+      },
+      { label: "Volume", get: (q) => q.volume, html: (q) => fmt.compact(q.volume) },
+    ];
+
+    const FUND_COLS = [
+      nameCol,
+      { label: "Valor de mercado", get: (q) => q.f.marketCap, html: (q) => fmt.compact(q.f.marketCap, q.currency) },
+      { label: "P/L", get: (q) => q.f.trailingPE, show: fmt.mult },
+      { label: "P/VP", get: (q) => q.f.priceToBook, show: fmt.mult },
+      { label: "EV/EBITDA", get: (q) => q.f.evToEbitda, show: fmt.mult },
+      { label: "Div. yield", get: (q) => q.f.dividendYield, show: fmt.pct },
+      { label: "ROE", get: (q) => q.f.roe, show: fmt.pct, tone: true },
+      { label: "Margem líq.", get: (q) => q.f.profitMargin, show: fmt.pct, tone: true },
+      // O Yahoo informa dívida/patrimônio em pontos percentuais (80 = 0,8x).
+      { label: "Dív./PL", get: (q) => q.f.debtToEquity, html: (q) => fmt.mult(q.f.debtToEquity != null ? q.f.debtToEquity / 100 : null) },
+      { label: "Beta", get: (q) => q.f.beta, show: (v) => fmt.num(v) },
+      {
+        label: "Analistas",
+        get: (q) => q.f.recommendation,
+        html: (q) =>
+          q.f.recommendation && RECOMMENDATION[q.f.recommendation]
+            ? `${RECOMMENDATION[q.f.recommendation]}${q.f.analysts ? ` <span class="muted">(${q.f.analysts})</span>` : ""}`
+            : "—",
+      },
+      { label: "Preço-alvo", get: (q) => q.f.targetMeanPrice, html: (q) => fmt.money(q.f.targetMeanPrice, q.currency) },
+      { label: "Potencial", get: (q) => q.upside, show: fmt.signed, tone: true },
+    ];
+
+    function renderTable(table, cols) {
+      const state = (table._sort ??= { i: null, dir: 1 });
+      const rows = [...quotes];
+      if (state.i != null) {
+        const get = cols[state.i].get;
+        // Valores ausentes ficam sempre no fim, em qualquer direção.
+        rows.sort((a, b) => {
+          const x = get(a);
+          const y = get(b);
+          if (x == null) return y == null ? 0 : 1;
+          if (y == null) return -1;
+          return (typeof x === "string" ? x.localeCompare(y, "pt-BR") : x - y) * state.dir;
+        });
+      }
+      const head = cols
+        .map((c, i) => `<th data-i="${i}" class="${state.i === i ? (state.dir > 0 ? "asc" : "desc") : ""}">${c.label}</th>`)
+        .join("");
+      const body = rows
+        .map(
+          (q) =>
+            `<tr>${cols
+              .map((c) => {
+                const v = c.get(q);
+                return `<td class="${c.tone ? tone(v) : ""}">${c.html ? c.html(q) : c.show(v)}</td>`;
+              })
+              .join("")}</tr>`,
+        )
+        .join("");
+      table.innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
+      table.onclick = (e) => {
+        const th = e.target.closest("th");
+        if (!th) return;
+        const i = Number(th.dataset.i);
+        // Primeiro clique: texto em ordem alfabética, números do maior para o menor.
+        state.dir = state.i === i ? -state.dir : i === 0 ? 1 : -1;
+        state.i = i;
+        renderTable(table, cols);
+      };
+    }
+
+    // ---------- Gráfico de desempenho ----------
+
+    function chartDefaults() {
+      const muted = cssVar("--muted");
+      return {
+        maintainAspectRatio: false,
+        animation: { duration: 300 },
+        plugins: { legend: { labels: { color: muted, usePointStyle: true, boxHeight: 6 } } },
+        scales: {
+          x: { ticks: { color: muted, maxTicksLimit: 8 }, grid: { display: false } },
+          y: { ticks: { color: muted }, grid: { color: "rgba(127,127,127,0.15)" } },
+        },
+      };
+    }
+
+    // Cada série começa em 100 no início do período escolhido.
+    function renderPerfChart(days) {
+      const datasets = quotes.map((q) => {
+        const h = days && q.history.length > days ? q.history.slice(-days - 1) : q.history;
+        const base = h[0]?.close;
+        return {
+          label: q.label,
+          data: h.map((p) => ({ x: p.date, y: (p.close / base) * 100 })),
+          borderColor: q.color,
+          backgroundColor: q.color,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.15,
+        };
+      });
+      const labels = [...new Set(datasets.flatMap((d) => d.data.map((p) => p.x)))].sort();
+      const opts = chartDefaults();
+      opts.interaction = { mode: "index", intersect: false };
+      opts.scales.x.ticks.callback = function (v) {
+        const [y, m, d] = this.getLabelForValue(v).split("-");
+        return `${d}/${m}/${y.slice(2)}`;
+      };
+      opts.plugins.tooltip = { callbacks: { label: (c) => `${c.dataset.label}: ${fmt.num(c.parsed.y, 1)}` } };
+
+      perfChart?.destroy();
+      perfChart = new Chart($("#perfChart"), { type: "line", data: { labels, datasets }, options: opts });
+    }
+
+    // ---------- Gráfico de barras por indicador ----------
+
+    const METRICS = [
+      { label: "Retorno 12 meses", get: (q) => q.r1y, show: fmt.signed, pct: true },
+      { label: "Retorno 6 meses", get: (q) => q.r6m, show: fmt.signed, pct: true },
+      { label: "Dividend yield", get: (q) => q.f.dividendYield, show: fmt.pct, pct: true },
+      { label: "P/L", get: (q) => q.f.trailingPE, show: fmt.mult },
+      { label: "P/VP", get: (q) => q.f.priceToBook, show: fmt.mult },
+      { label: "ROE", get: (q) => q.f.roe, show: fmt.pct, pct: true },
+      { label: "Margem líquida", get: (q) => q.f.profitMargin, show: fmt.pct, pct: true },
+      { label: "Volatilidade anual", get: (q) => q.vol, show: fmt.pct, pct: true },
+      { label: "Queda máxima", get: (q) => q.mdd, show: fmt.signed, pct: true },
+      { label: "Potencial até o preço-alvo", get: (q) => q.upside, show: fmt.signed, pct: true },
+    ];
+
+    function renderBarChart(index) {
+      const m = METRICS[index];
+      const values = quotes.map((q) => m.get(q));
+      const opts = chartDefaults();
+      opts.plugins.legend = { display: false };
+      opts.plugins.tooltip = { callbacks: { label: (c) => m.show(values[c.dataIndex]) } };
+      opts.plugins.title = {
+        display: values.every((v) => v == null),
+        text: "Sem dados para este indicador",
+        color: cssVar("--muted"),
+      };
+      opts.scales.y.ticks.callback = (v) => (m.pct ? `${fmt.num(v * 100, 0)}%` : fmt.num(v, 1));
+
+      barChart?.destroy();
+      barChart = new Chart($("#barChart"), {
+        type: "bar",
+        data: {
+          labels: quotes.map((q) => q.label),
+          datasets: [{ data: values, backgroundColor: quotes.map((q) => q.color), borderRadius: 4, maxBarThickness: 64 }],
+        },
+        options: opts,
+      });
+    }
+
+    // ---------- Perfil ----------
+
+    function renderProfile(i) {
+      const q = quotes[i];
+      const f = q.f;
+      document.querySelectorAll("#companyTabs button").forEach((b, j) => b.classList.toggle("active", j === i));
+      const website = /^https?:\/\//.test(f.website ?? "") ? `<a href="${esc(f.website)}" target="_blank" rel="noopener">${esc(f.website.replace(/^https?:\/\//, ""))}</a>` : null;
+      const meta = [f.sector, f.industry, f.employees ? `${fmt.int(f.employees)} funcionários` : null].filter(Boolean).map(esc);
+      if (website) meta.push(website);
+
+      const stats = [
+        ["Preço", fmt.money(q.price, q.currency)],
+        ["Mín. / máx. do dia", `${fmt.num(q.dayLow)} / ${fmt.num(q.dayHigh)}`],
+        ["Mín. / máx. 52 semanas", `${fmt.num(q.fiftyTwoWeekLow)} / ${fmt.num(q.fiftyTwoWeekHigh)}`],
+        ["LPA (12m)", fmt.money(f.eps, q.currency)],
+        ["P/L projetado", fmt.mult(f.forwardPE)],
+        ["Receita (12m)", fmt.compact(f.totalRevenue, q.currency)],
+        ["Cresc. receita", fmt.signed(f.revenueGrowth)],
+        ["Margem EBITDA", fmt.pct(f.ebitdaMargin)],
+        ["Volatilidade a.a.", fmt.pct(q.vol)],
+        ["Queda máxima", fmt.signed(q.mdd)],
+      ];
+
+      $("#profile").innerHTML = `
+        <h3><span class="dot" style="--c:${q.color}"></span>${esc(q.name)}</h3>
+        <div class="meta muted small">${esc(q.symbol)}${q.exchange ? ` · ${esc(q.exchange)}` : ""}${meta.length ? ` · ${meta.join(" · ")}` : ""}</div>
+        <div class="stats">${stats.map(([k, v]) => `<div class="stat"><div class="k">${k}</div><div class="v num">${v}</div></div>`).join("")}</div>
+        ${f.summary ? `<p class="summary small">${esc(f.summary)}</p>` : `<p class="muted small">Descrição da empresa indisponível.</p>`}`;
+    }
+
+    // ---------- Inicialização ----------
+
+    function init(data) {
+      quotes = data.quotes.map(enrich);
+      const updated = new Date(data.updatedAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+      $("#updated").textContent = `Atualizado em ${updated}` + (data.errors?.length ? ` · avisos: ${data.errors.join("; ")}` : "");
+
+      if (!quotes.some((q) => q.fundamentals)) {
+        $("#fundNotice").innerHTML = `<div class="notice">Os indicadores fundamentalistas não vieram nesta atualização. Eles aparecem na próxima execução bem-sucedida do workflow.</div>`;
+      }
+
+      renderCards();
+      renderHighlights();
+      renderTable($("#perfTable"), PERF_COLS);
+      renderTable($("#fundTable"), FUND_COLS);
+      renderPerfChart(0);
+
+      $("#metric").innerHTML = METRICS.map((m, i) => `<option value="${i}">${m.label}</option>`).join("");
+      $("#metric").onchange = (e) => renderBarChart(Number(e.target.value));
+      renderBarChart(0);
+
+      $("#companyTabs").innerHTML = quotes.map((q, i) => `<button data-i="${i}">${esc(q.label)}</button>`).join("");
+      $("#companyTabs").onclick = (e) => {
+        const b = e.target.closest("button");
+        if (b) renderProfile(Number(b.dataset.i));
+      };
+      renderProfile(0);
+    }
+
+    $("#periods").addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn || !quotes.length) return;
+      document.querySelectorAll("#periods button").forEach((b) => b.classList.toggle("active", b === btn));
+      renderPerfChart(Number(btn.dataset.days));
+    });
+
+    fetch("data/quotes.json", { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(init)
+      .catch((err) => {
+        $("#updated").textContent = `Sem dados ainda (${err.message}). Rode o workflow "Atualizar cotações" na aba Actions do GitHub.`;
+      });
+  </script>
 </body>
 </html>

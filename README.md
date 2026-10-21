@@ -1,11 +1,24 @@
 # finance_a-es
 
-Página estática que compara 5 ações usando dados do Yahoo Finance.
+Painel estático (GitHub Pages) que compara 5 ações usando dados do Yahoo Finance.
+
+O painel (`index.html`, arquivo único) mostra:
+
+- cards com preço, variação do dia, retorno em 12 meses, dividend yield e minigráfico;
+- gráfico de desempenho relativo (base 100) em 1M, 3M, 6M e 1A;
+- destaques: maior alta, maior dividend yield, menor P/L, maior ROE, menor volatilidade e maior potencial;
+- tabela de desempenho e risco (retornos, volatilidade anual, queda máxima, faixa de 52 semanas, volume);
+- tabela de fundamentos (valor de mercado, P/L, P/VP, EV/EBITDA, DY, ROE, margem, dívida/PL, beta,
+  recomendação dos analistas, preço-alvo e potencial), ordenável por qualquer coluna;
+- gráfico de barras para comparar qualquer indicador;
+- perfil de cada empresa (setor, indústria, funcionários, descrição e indicadores extras).
 
 ## Como funciona
 
 O Yahoo Finance não tem API oficial e bloqueia chamadas feitas direto do navegador (CORS).
 Por isso, os dados são buscados por um script Node e salvos em `data/quotes.json`.
+Cotações vêm do endpoint `v8/chart`; fundamentos vêm do `v10/quoteSummary`, que exige uma sessão
+(cookie + crumb) que o script obtém sozinho. Se os fundamentos falharem, as cotações continuam funcionando.
 A página (`index.html`) só lê esse arquivo.
 
 ```
