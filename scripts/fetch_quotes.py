@@ -32,11 +32,6 @@ def clean(value):
     return value
 
 
-def ratio(value):
-    """Dividend yield às vezes vem em % (5.2) em vez de fração (0.052)."""
-    return value / 100 if value is not None and value > 1 else value
-
-
 def fetch_ticker(symbol, label, period, errors):
     ticker = yf.Ticker(symbol)
     hist = ticker.history(period=period, interval="1d", auto_adjust=False).dropna(subset=["Close"])
@@ -83,7 +78,10 @@ def fetch_ticker(symbol, label, period, errors):
             "priceToBook": get("priceToBook"),
             "evToEbitda": get("enterpriseToEbitda"),
             "eps": get("trailingEps") or get("epsTrailingTwelveMonths"),
-            "dividendYield": ratio(get("dividendYield") or get("trailingAnnualDividendYield")),
+            # O yfinance devolve dividendYield em % (0.57 = 0,57%); o painel usa fração.
+            "dividendYield": get("dividendYield") / 100
+            if get("dividendYield") is not None
+            else get("trailingAnnualDividendYield"),
             "beta": get("beta"),
             "roe": get("returnOnEquity"),
             "profitMargin": get("profitMargins"),
