@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-21T23:22:59.957212+00:00",
+  "updatedAt": "2026-10-21T23:24:11.649822+00:00",
   "range": "1y",
   "quotes": [
     {
@@ -5169,7 +5169,7 @@
         "priceToBook": 0.756031,
         "evToEbitda": null,
         "eps": 2.15,
-        "dividendYield": 0.57,
+        "dividendYield": 0.005699999999999999,
         "beta": 0.203,
         "roe": 0.105459996,
         "profitMargin": 0.21834,
