@@ -25,10 +25,24 @@ async function getSession() {
   }
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Tenta até 3 vezes, alternando entre query1 e query2, quando o Yahoo limita (429) ou falha (5xx).
 async function getJson(url, headers = {}) {
-  const res = await fetch(url, { headers: { ...UA, ...headers } });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const target = attempt % 2 ? url.replace("//query1.", "//query2.") : url;
+    try {
+      const res = await fetch(target, { headers: { ...UA, ...headers } });
+      if (res.ok) return await res.json();
+      lastError = new Error(`HTTP ${res.status}`);
+      if (res.status !== 429 && res.status < 500) break;
+    } catch (e) {
+      lastError = new Error(e.cause?.message ?? e.message);
+    }
+    await sleep(2000 * 2 ** attempt);
+  }
+  throw lastError;
 }
 
 async function fetchChart(symbol) {
@@ -124,10 +138,12 @@ const settled = await Promise.allSettled(
 );
 const quotes = settled.filter((s) => s.status === "fulfilled").map((s) => s.value);
 settled.filter((s) => s.status === "rejected").forEach((s) => errors.push(s.reason.message));
-errors.forEach((e) => console.error("Erro:", e));
+// No GitHub Actions, "::warning::" vira um aviso visível na página da execução.
+const prefix = process.env.GITHUB_ACTIONS ? "::warning::" : "Erro: ";
+errors.forEach((e) => console.error(prefix + e));
 
 if (quotes.length === 0) {
-  console.error("Nenhuma cotação obtida; data/quotes.json não foi alterado.");
+  console.error(`${process.env.GITHUB_ACTIONS ? "::error::" : ""}Nenhuma cotação obtida; data/quotes.json não foi alterado.`);
   process.exit(1);
 }
 
