@@ -1,0 +1,10 @@
+{
+  "range": "1y",
+  "tickers": [
+    { "symbol": "PETR4.SA", "label": "Petrobras" },
+    { "symbol": "VALE3.SA", "label": "Vale" },
+    { "symbol": "ITUB4.SA", "label": "Itaú Unibanco" },
+    { "symbol": "WEGE3.SA", "label": "WEG" },
+    { "symbol": "BBAS3.SA", "label": "Banco do Brasil" }
+  ]
+}
