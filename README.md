@@ -16,13 +16,13 @@ O painel (`index.html`, arquivo único) mostra:
 ## Como funciona
 
 O Yahoo Finance não tem API oficial e bloqueia chamadas feitas direto do navegador (CORS).
-Por isso, os dados são buscados por um script Node e salvos em `data/quotes.json`.
-Cotações vêm do endpoint `v8/chart`; fundamentos vêm do `v10/quoteSummary`, que exige uma sessão
-(cookie + crumb) que o script obtém sozinho. Se os fundamentos falharem, as cotações continuam funcionando.
+Por isso, os dados são buscados por um script Python com a biblioteca [yfinance](https://github.com/ranaroussi/yfinance)
+e salvos em `data/quotes.json`. O yfinance imita um navegador e gerencia a sessão com o Yahoo, evitando o bloqueio
+(HTTP 429) que o Yahoo aplica a servidores como os do GitHub. Se os fundamentos falharem, as cotações continuam funcionando.
 A página (`index.html`) só lê esse arquivo.
 
 ```
-tickers.json ──> scripts/fetch-quotes.mjs ──> data/quotes.json ──> index.html
+tickers.json ──> scripts/fetch_quotes.py ──> data/quotes.json ──> index.html
                  (GitHub Actions, de hora em hora no pregão)
 ```
 
@@ -34,7 +34,8 @@ Ações americanas usam o código puro (ex.: `AAPL`).
 ## Rodar localmente
 
 ```bash
-node scripts/fetch-quotes.mjs      # Node 18+; gera data/quotes.json
+pip install -r requirements.txt
+python scripts/fetch_quotes.py     # gera data/quotes.json
 python3 -m http.server 8000        # abra http://localhost:8000
 ```
 
