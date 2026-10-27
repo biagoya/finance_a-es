@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-26T23:48:56.585295+00:00",
+  "updatedAt": "2026-10-27T18:39:44.151784+00:00",
   "range": "1y",
   "quotes": [
     {
@@ -8,14 +8,14 @@
       "name": "Petróleo Brasileiro S.A. - Petrobras",
       "currency": "BRL",
       "exchange": "São Paulo",
-      "price": 53.88,
-      "previousClose": 58.68,
-      "dayHigh": 54.23,
-      "dayLow": 51.17,
-      "volume": 141128600,
+      "price": 52.93,
+      "previousClose": 53.88,
+      "dayHigh": 53.7,
+      "dayLow": 52.83,
+      "volume": 59518200,
       "fiftyTwoWeekHigh": 59.79,
       "fiftyTwoWeekLow": 29.53,
-      "marketTime": "2026-10-26T03:00:00+00:00",
+      "marketTime": "2026-10-27T03:00:00+00:00",
       "history": [
         {
           "date": "2025-10-27",
@@ -1008,16 +1008,20 @@
         {
           "date": "2026-10-26",
           "close": 53.88
+        },
+        {
+          "date": "2026-10-27",
+          "close": 52.93
         }
       ],
       "fundamentals": {
-        "marketCap": 736188628992,
-        "trailingPE": 5.1363206,
-        "forwardPE": 3.9678915,
-        "priceToBook": 1.4438846,
+        "marketCap": 723208306688,
+        "trailingPE": 5.4963655,
+        "forwardPE": 3.8979306,
+        "priceToBook": 1.4184264,
         "evToEbitda": 4.148,
-        "eps": 10.49,
-        "dividendYield": 0.062400000000000004,
+        "eps": 9.63,
+        "dividendYield": 0.068,
         "beta": -0.226,
         "roe": 0.30274,
         "profitMargin": 0.24317,
@@ -1041,14 +1045,14 @@
       "name": "Vale S.A.",
       "currency": "BRL",
       "exchange": "São Paulo",
-      "price": 64.38,
-      "previousClose": 61.9,
-      "dayHigh": 67.99,
-      "dayLow": 64.16,
-      "volume": 92020000,
+      "price": 62.93,
+      "previousClose": 64.38,
+      "dayHigh": 64.43,
+      "dayLow": 62.64,
+      "volume": 30229200,
       "fiftyTwoWeekHigh": 91.62,
       "fiftyTwoWeekLow": 61.4,
-      "marketTime": "2026-10-26T03:00:00+00:00",
+      "marketTime": "2026-10-27T03:00:00+00:00",
       "history": [
         {
           "date": "2025-10-27",
@@ -2041,16 +2045,20 @@
         {
           "date": "2026-10-26",
           "close": 64.38
+        },
+        {
+          "date": "2026-10-27",
+          "close": 62.93
         }
       ],
       "fundamentals": {
-        "marketCap": 273985994752,
-        "trailingPE": 24.294338,
-        "forwardPE": 6.8492746,
-        "priceToBook": 1.3933859,
+        "marketCap": 267815141376,
+        "trailingPE": 23.74717,
+        "forwardPE": 6.695012,
+        "priceToBook": 1.3620033,
         "evToEbitda": 4.642,
         "eps": 2.65,
-        "dividendYield": 0.0706,
+        "dividendYield": 0.0679,
         "beta": 0.699,
         "roe": 0.041149996,
         "profitMargin": 0.04755,
@@ -2058,7 +2066,7 @@
         "revenueGrowth": 0.064,
         "debtToEquity": 54.603,
         "totalRevenue": 218068992000,
-        "targetMeanPrice": 90.02372,
+        "targetMeanPrice": 89.55445,
         "recommendation": "buy",
         "analysts": 10,
         "sector": "Basic Materials",
@@ -2074,14 +2082,14 @@
       "name": "Itaú Unibanco Holding S.A.",
       "currency": "BRL",
       "exchange": "São Paulo",
-      "price": 41.7,
-      "previousClose": 48.3,
-      "dayHigh": 42.15,
-      "dayLow": 39.59,
-      "volume": 147060000,
+      "price": 41.5,
+      "previousClose": 41.7,
+      "dayHigh": 42.6,
+      "dayLow": 41.15,
+      "volume": 35523800,
       "fiftyTwoWeekHigh": 50.85,
       "fiftyTwoWeekLow": 37.077667,
-      "marketTime": "2026-10-26T03:00:00+00:00",
+      "marketTime": "2026-10-27T03:00:00+00:00",
       "history": [
         {
           "date": "2025-10-27",
@@ -3074,16 +3082,20 @@
         {
           "date": "2026-10-26",
           "close": 41.7
+        },
+        {
+          "date": "2026-10-27",
+          "close": 41.5
         }
       ],
       "fundamentals": {
-        "marketCap": 459618484224,
-        "trailingPE": 10.072464,
-        "forwardPE": 8.280529,
-        "priceToBook": 2.1104307,
+        "marketCap": 457414082560,
+        "trailingPE": 10.024155,
+        "forwardPE": 8.240814,
+        "priceToBook": 2.1003087,
         "evToEbitda": null,
         "eps": 4.14,
-        "dividendYield": 0.018500000000000003,
+        "dividendYield": 0.021400000000000002,
         "beta": 0.114,
         "roe": 0.21476,
         "profitMargin": 0.32584,
@@ -3107,14 +3119,14 @@
       "name": "WEG S.A.",
       "currency": "BRL",
       "exchange": "São Paulo",
-      "price": 44.53,
-      "previousClose": 42.73,
-      "dayHigh": 45.81,
-      "dayLow": 41.15,
-      "volume": 36972500,
+      "price": 46.11,
+      "previousClose": 44.53,
+      "dayHigh": 47.08,
+      "dayLow": 45.06,
+      "volume": 14390600,
       "fiftyTwoWeekHigh": 54.53,
       "fiftyTwoWeekLow": 41.15,
-      "marketTime": "2026-10-26T03:00:00+00:00",
+      "marketTime": "2026-10-27T03:00:00+00:00",
       "history": [
         {
           "date": "2025-10-27",
@@ -4107,16 +4119,20 @@
         {
           "date": "2026-10-26",
           "close": 44.53
+        },
+        {
+          "date": "2026-10-27",
+          "close": 46.11
         }
       ],
       "fundamentals": {
-        "marketCap": 186840301568,
-        "trailingPE": 29.885904,
-        "forwardPE": 24.461657,
-        "priceToBook": 9.362909,
+        "marketCap": 193469710336,
+        "trailingPE": 29.557693,
+        "forwardPE": 25.103987,
+        "priceToBook": 9.695122,
         "evToEbitda": 21.755,
-        "eps": 1.49,
-        "dividendYield": 0.0363,
+        "eps": 1.56,
+        "dividendYield": 0.0348,
         "beta": -0.012,
         "roe": 0.29878,
         "profitMargin": 0.15395,
@@ -4124,7 +4140,7 @@
         "revenueGrowth": 0.057,
         "debtToEquity": 21.278,
         "totalRevenue": 40719466496,
-        "targetMeanPrice": 57.2375,
+        "targetMeanPrice": 57.95625,
         "recommendation": "buy",
         "analysts": 16,
         "sector": "Industrials",
@@ -4140,14 +4156,14 @@
       "name": "Banco do Brasil S.A.",
       "currency": "BRL",
       "exchange": "São Paulo",
-      "price": 17.47,
-      "previousClose": 24.72,
-      "dayHigh": 18.12,
-      "dayLow": 16.48,
-      "volume": 285273000,
+      "price": 17.44,
+      "previousClose": 17.47,
+      "dayHigh": 18.31,
+      "dayLow": 17.35,
+      "volume": 92247500,
       "fiftyTwoWeekHigh": 27.81,
       "fiftyTwoWeekLow": 16.48,
-      "marketTime": "2026-10-26T03:00:00+00:00",
+      "marketTime": "2026-10-27T03:00:00+00:00",
       "history": [
         {
           "date": "2025-10-27",
@@ -5140,16 +5156,20 @@
         {
           "date": "2026-10-26",
           "close": 17.47
+        },
+        {
+          "date": "2026-10-27",
+          "close": 17.44
         }
       ],
       "fundamentals": {
-        "marketCap": 99734880256,
-        "trailingPE": 8.125581,
-        "forwardPE": 4.1868877,
-        "priceToBook": 0.548044,
+        "marketCap": 99563618304,
+        "trailingPE": 8.111628,
+        "forwardPE": 4.179698,
+        "priceToBook": 0.5471029,
         "evToEbitda": null,
         "eps": 2.15,
-        "dividendYield": 0.005600000000000001,
+        "dividendYield": 0.0079,
         "beta": 0.203,
         "roe": 0.105459996,
         "profitMargin": 0.21834,
