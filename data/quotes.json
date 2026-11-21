@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-20T21:01:47.425321+00:00",
+  "updatedAt": "2026-11-21T02:08:38.115616+00:00",
   "range": "1y",
   "quotes": [
     {
@@ -1012,11 +1012,11 @@
       ],
       "fundamentals": {
         "marketCap": 583020904448,
-        "trailingPE": 3.8755674,
+        "trailingPE": 3.80303,
         "forwardPE": 2.949471,
         "priceToBook": 1.0896878,
         "evToEbitda": 3.156,
-        "eps": 11.01,
+        "eps": 11.22,
         "dividendYield": 0.0859,
         "beta": -0.231,
         "roe": 0.30236998,
@@ -3110,7 +3110,7 @@
       "price": 51.13,
       "previousClose": 51.38,
       "dayHigh": 52.51,
-      "dayLow": 50.47,
+      "dayLow": 50.5,
       "volume": 10431000,
       "fiftyTwoWeekHigh": 54.53,
       "fiftyTwoWeekLow": 41.15,
@@ -5145,7 +5145,7 @@
       "fundamentals": {
         "marketCap": 81637597184,
         "trailingPE": 7.4093266,
-        "forwardPE": 3.9072852,
+        "forwardPE": 4.0901666,
         "priceToBook": 0.44819155,
         "evToEbitda": null,
         "eps": 1.93,
